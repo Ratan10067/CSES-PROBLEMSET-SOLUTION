@@ -39,16 +39,12 @@ public:
 };
 signed main()
 {
-    while (true)
-    {
-        cout<<2<<endl;
-    }
     int t;
     cin >> t;
     vector<string> ans;
     Solution s1;
     ans = s1.graycode(t);
-    
+
     for (int i = 0; i < ans.size(); i++)
     {
         cout << ans[i] << endl;

@@ -26,32 +26,26 @@ signed main()
         int val = 1LL * arr[i] + 1LL * arr[j] + 1LL * arr[k];
         if (val > x)
         {
-            // cout<<k<<endl;
             k--;
             if (j < k)
                 val = 1LL * arr[i] + 1LL * arr[j] + 1LL * arr[k];
-            // continue;
         }
         else if (val < x)
         {
             j++;
             if (j < k)
                 val = 1LL * arr[i] + 1LL * arr[j] + 1LL * arr[k];
-            // continue;
         }
         if (val == x)
         {
             vector<int> temp;
             auto it1 = mp.find(arr[i]);
             temp.push_back(it1->second);
-            // cout<<it1->second<<endl;
             mp.erase(it1);
             auto it2 = mp.find(arr[j]);
-            // cout << it2->second << endl;
             temp.push_back(it2->second);
             mp.erase(it2);
             auto it3 = mp.find(arr[k]);
-            // cout << it3->second << endl;
             temp.push_back(it3->second);
             sort(temp.begin(), temp.end());
             cout << temp[2] + 1 << " " << temp[1] + 1 << " " << temp[0] + 1 << endl;
@@ -59,7 +53,6 @@ signed main()
         }
         if (j >= k - 1)
         {
-            // cout<<"hello"<<k<<endl;
             i++;
             j = i + 1;
             k = n - 1;

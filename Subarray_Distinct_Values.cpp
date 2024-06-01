@@ -38,11 +38,7 @@ signed main()
         {
             int temp = j - i + 1;
             cnt += 1LL * (temp) * (temp - 1) / 2;
-            cout << "cnt1 : " << cnt;
-            cout<<" i : "<<i<<" j : "<<j<<endl;
         }
-        cout << "cnt : " << cnt;
-        cout << " i : " << i << " j : " << j << endl;
         j++;
     }
     int temp = j - i + 1;
