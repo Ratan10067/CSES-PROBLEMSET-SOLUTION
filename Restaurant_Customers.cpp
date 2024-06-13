@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-using lli = long long int;
-#define mod 1000000007
+#define int long long
 #define IOS ios_base::sync_with_stdio(false)
 #define pi 3.14
 signed main()
@@ -23,14 +22,10 @@ signed main()
     sort(v.begin(), v.end());
     int cnt = 0;
     int ans = 0;
-    for(auto i:v)cout<<i.first<<" "<<i.second<<endl;
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < v.size(); i++)
     {
         cnt += v[i].second;
-        if (i + 1 < n and cnt > 0)
-        {
-            ans = max(ans, v[i + 1].first - v[i].first);
-        }
+        ans = max(ans,cnt);
     }
     cout << ans << endl;
     return 0;
