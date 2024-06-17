@@ -1,22 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define int long long
-// Function to count the number of divisors of a number n
-int NumberOfDivisors(int n)
+
+// Function to precompute the number of divisors for each number up to maxN
+vector<int> precompute_divisors(int maxN)
 {
-    int cnt = 0;
-    for (int i = 1; i * i <= n; i++)
+    vector<int> divisors(maxN + 1, 0);
+
+    for (int i = 1; i <= maxN; ++i)
     {
-        if (n % i == 0)
+        for (int j = i; j <= maxN; j += i)
         {
-            cnt += 2; // i and n/i are both divisors
-            if (i * i == n)
-            {
-                cnt--; // If i and n/i are the same, count only once
-            }
+            divisors[j]++;
         }
     }
-    return cnt;
+    return divisors;
 }
 
 signed main()
@@ -25,14 +23,28 @@ signed main()
     cin.tie(0);                       // Untie cin from cout
     cout.tie(0);                      // Untie cout from cin
 
-    int n;
-    cin >> n; // Number of test cases
+    int t;
+    cin >> t; // Number of test cases
 
-    while (n--)
+    vector<int> queries(t);
+    int maxN = 0;
+
+    // Read all queries and find the maximum value among them
+    for (int i = 0; i < t; ++i)
     {
-        int x;
-        cin >> x;                            // Input number
-        cout << NumberOfDivisors(x) << endl; // Output number of divisors
+        cin >> queries[i];
+        if (queries[i] > maxN)
+        {
+            maxN = queries[i];
+        }
+    }
+    // Precompute the number of divisors for all numbers up to maxN
+    vector<int> divisors = precompute_divisors(maxN);
+
+    // Answer each query
+    for (int i = 0; i < t; ++i)
+    {
+        cout << divisors[queries[i]] << endl;
     }
 
     return 0;

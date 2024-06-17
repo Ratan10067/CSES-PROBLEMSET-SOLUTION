@@ -24,14 +24,7 @@ signed main()
     int ans = 0;
     for (int i = 1; i < n; i++)
     {
-        int l = v[i].first;
-        int r = v[i].second;
-        int l_1 = v[i-1].first;
-        int r_1 = v[i-1].second;
-        if(l>=l_1 and l<=r_1)
-        {
-            ans++;
-        }
+        
     }
     return 0;
 }
