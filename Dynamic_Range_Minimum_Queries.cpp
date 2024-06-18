@@ -3,6 +3,7 @@ using namespace std;
 #define int long long
 vector<int> tree;
 vector<int> v;
+#define INF 1e18
 void build(int node, int start, int end)
 {
     if (start == end)
@@ -13,7 +14,7 @@ void build(int node, int start, int end)
     int mid = start + (end - start) / 2;
     build(2 * node, start, mid);
     build(2 * node + 1, mid + 1, end);
-    tree[node] = tree[2 * node] + tree[2 * node + 1];
+    tree[node] = min(tree[2 * node], tree[2 * node + 1]);
 }
 void update(int node, int start, int end, int i, int x)
 {
@@ -32,7 +33,7 @@ void update(int node, int start, int end, int i, int x)
     {
         update(2 * node + 1, mid + 1, end, i, x);
     }
-    tree[node] = tree[2 * node] + tree[2 * node + 1];
+    tree[node] = min(tree[2 * node], tree[2 * node + 1]);
 }
 int query(int node, int start, int end, int l, int r)
 {
@@ -42,10 +43,10 @@ int query(int node, int start, int end, int l, int r)
     }
     if (start > r or end < l)
     {
-        return 0;
+        return INF;
     }
     int mid = start + (end - start) / 2;
-    return query(2 * node, start, mid, l, r) + query(2 * node + 1, mid + 1, end, l, r);
+    return min(query(2 * node, start, mid, l, r), query(2 * node + 1, mid + 1, end, l, r));
 }
 signed main()
 {
@@ -54,7 +55,7 @@ signed main()
     cout.tie(0);
     int n, q;
     cin >> n >> q;
-    tree.resize(4 * n);
+    tree.resize(4 * n, INF);
     v.resize(n);
     for (int i = 0; i < n; i++)
     {
