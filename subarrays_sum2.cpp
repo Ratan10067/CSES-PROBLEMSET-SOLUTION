@@ -1,43 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-using lli = long long int;
+#define int long long
 #define mod 1000000007
 #define pi 3.14
+
 signed main()
 {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+
     int n, x;
     cin >> n >> x;
-    int arr[n];
+
+    vector<int> arr(n); // Use vector instead of array for dynamic allocation
+
+    // Read input and calculate prefix sums
     for (int i = 0; i < n; i++)
     {
         cin >> arr[i];
-    }
-    int i = 0;
-    int j = 0;
-    int cnt = 0;
-    int sum = 0;
-    while (j < n)
-    {
-        cnt += arr[j];
-        if (cnt >= x)
+        if (i > 0)
         {
-            while (i <= j)
-            {
-                if (cnt == x)
-                {
-                    sum++;
-                    break;
-                }
-                if(arr[i]>0)
-                    cnt -= arr[i];
-                else
-                    cnt += arr[i];
-                i++;
-            }
+            arr[i] += arr[i - 1];
         }
-        j++;
     }
+
+    int sum = 0;
+    unordered_map<int, int> mp;
+    mp[0]++; // To handle cases where the subarray starts from index 0
+
+    for (int i = 0; i < n; i++)
+    {
+        if (mp.find(arr[i] - x) != mp.end())
+        {
+            sum += mp[arr[i] - x];
+        }
+        mp[arr[i]]++;
+    }
+
     cout << sum << endl;
     return 0;
 }
