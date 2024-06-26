@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-using lli = long long int;
+#define int long long
 #define mod 1000000007
 #define IOS ios_base::sync_with_stdio(false)
 #define F first
@@ -12,20 +12,20 @@ vector<vector<int>> g;
 vector<int> parent;
 vector<int> col;
 vector<int> ans;
-int n,m;
-void dfs(int node,int par)
+int n, m;
+void dfs(int node, int par)
 {
     col[node] = 2;
     parent[node] = par;
-    for(auto &v:g[node])
+    for (auto &v : g[node])
     {
-        if(col[v]==1)
+        if (col[v] == 1)
         {
-            dfs(v,node);
+            dfs(v, node);
         }
-        else if(col[v]==2)
+        else if (col[v] == 2)
         {
-            if(isCycle)
+            if (isCycle)
             {
                 int temp = node;
                 while (temp != v)
@@ -42,32 +42,36 @@ void dfs(int node,int par)
 }
 signed main()
 {
-    cin>>n>>m;
+    IOS;
+    cin.tie(0);
+    cout.tie(0);
+    cin >> n >> m;
     g.clear();
-    g.resize(n+1);
+    g.resize(n + 1);
     for (int i = 0; i < m; i++)
     {
-        int a,b;
-        cin>>a>>b;
+        int a, b;
+        cin >> a >> b;
         g[a].push_back(b);
-        g[b].push_back(a);
     }
-    parent.resize(n+1);
-    col.assign(n+1,1);
-    for(int i=1;i<=n;i++)
+    parent.resize(n + 1);
+    col.assign(n + 1, 1);
+    for (int i = 1; i <= n; i++)
     {
-        if(col[i]==1)
+        if (col[i] == 1)
         {
-            dfs(i,-1);
+            dfs(i, -1);
         }
     }
-    if(isCycle)
+    if (isCycle)
     {
-        for(auto i:ans)cout<<i<<" ";cout<<endl;
+        for (auto i : ans)
+            cout << i << " ";
+        cout << endl;
     }
     else
     {
-        cout<<"IMPOSSIBLE"<<endl;
+        cout << "IMPOSSIBLE" << endl;
     }
     return 0;
 }

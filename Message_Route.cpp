@@ -5,51 +5,71 @@ using namespace std;
 #define F first
 #define S second
 #define MP make_pair
+#define INF 1e9
+vector<vector<int>> g;
+vector<int> par;
+vector<int> dis;
+int n, m;
+vector<int> ans;
+void bfs(int node)
+{
+    queue<int> q;
+    q.push(node);
+    dis[node] = 1;
+    while (!q.empty())
+    {
+        int frontNode = q.front();
+        q.pop();
+        for (auto &v : g[frontNode])
+        {
+            if (dis[v] == INF)
+            {
+                dis[v] = dis[frontNode] + 1;
+                par[v] = frontNode;
+                q.push(v);
+            }
+        }
+        if (dis[n] != INF)
+        {
+            int temp = n;
+            while (temp != 1)
+            {
+                ans.push_back(temp);
+                temp = par[temp];
+            }
+            ans.push_back(1);
+            return;
+        }
+    }
+}
 signed main()
 {
-    int n, m;
+    IOS;
+    cin.tie(0);
+    cout.tie(0);
     cin >> n >> m;
-    vector<vector<pair<int, int>>> g;
+    g.clear();
     g.resize(n + 1);
     for (int i = 0; i < m; i++)
     {
         int a, b;
         cin >> a >> b;
-        g[a].push_back({b, 1});
-        g[b].push_back({a,1});
+        g[a].push_back(b);
+        g[b].push_back(a);
     }
-    vector<int> dis(n + 1, 1e9);
-    dis[1] = 1;
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    pq.push({0, 1});
-    set<int> par;
-    vector<int> vis(n + 1, 0);
-    while (!pq.empty())
+    dis.assign(n + 1, INF);
+    par.resize(n + 1);
+    bfs(1);
+    reverse(ans.begin(), ans.end());
+    if (dis[n] == INF)
     {
-        pair<int, int> node = pq.top();
-        pq.pop();
-        if (vis[node.S])
-            continue;
-        vis[node.S] = 1;
-        for (auto &v : g[node.S])
-        {
-            int weigh = v.S;
-            if (dis[v.F] > dis[node.S] + weigh)
-            {
-                dis[v.F] = weigh + dis[node.S];
-                par.insert(node.S);
-                pq.push({dis[v.S], v.F});
-            }
-        }
-    }
-    if (dis[n] == 1e9)
         cout << "IMPOSSIBLE" << endl;
+    }
     else
     {
-        par.insert(n);
         cout << dis[n] << endl;
-        for (auto i : par)
-            cout << i << " ";
+        for (auto &v : ans)
+            cout << v << " ";
         cout << endl;
     }
     return 0;
