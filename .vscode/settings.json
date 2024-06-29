@@ -5,6 +5,8 @@
     "ios": "cpp",
     "vector": "cpp",
     "set": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "__tree": "cpp",
+    "queue": "cpp"
   }
 }

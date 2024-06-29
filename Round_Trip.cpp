@@ -1,77 +1,81 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <stack>
+
 using namespace std;
 
-#define int long long
-#define mod 1000000007
-#define IOS ios_base::sync_with_stdio(false)
-#define F first
-#define S second
-bool isCycle = false;
-#define MP make_pair
-vector<vector<int>> g;
+vector<vector<int>> adj;
 vector<int> parent;
-vector<int> col;
-vector<int> ans;
-int n, m;
-void dfs(int node, int par)
+vector<bool> visited;
+
+bool dfs(int v, int par, stack<int> &path)
 {
-    col[node] = 2;
-    parent[node] = par;
-    for (auto &v : g[node])
+    visited[v] = true;
+    path.push(v);
+
+    for (int u : adj[v])
     {
-        if (col[v] == 1)
+        if (!visited[u])
         {
-            dfs(v, node);
-        }
-        else if (col[v] == 2)
-        {
-            if (isCycle)
+            parent[u] = v;
+            if (dfs(u, v, path))
             {
-                int temp = node;
-                while (temp != v)
-                {
-                    ans.push_back(temp);
-                    temp = parent[temp];
-                }
-                ans.push_back(temp);
+                return true;
             }
-            isCycle = 1;
+        }
+        else if (u != par)
+        {
+            path.push(u);
+            return true;
         }
     }
-    col[node] = 3;
+    path.pop();
+    return false;
 }
-signed main()
+
+int main()
 {
-    IOS;
-    cin.tie(0);
-    cout.tie(0);
+    int n, m;
     cin >> n >> m;
-    g.clear();
-    g.resize(n + 1);
-    for (int i = 0; i < m; i++)
+
+    adj.resize(n + 1);
+    parent.resize(n + 1, -1);
+    visited.resize(n + 1, false);
+
+    for (int i = 0; i < m; ++i)
     {
         int a, b;
         cin >> a >> b;
-        g[a].push_back(b);
+        adj[a].push_back(b);
+        adj[b].push_back(a);
     }
-    parent.resize(n + 1);
-    col.assign(n + 1, 1);
-    for (int i = 1; i <= n; i++)
+
+    stack<int> path;
+    for (int i = 1; i <= n; ++i)
     {
-        if (col[i] == 1)
+        if (!visited[i] && dfs(i, -1, path))
         {
-            dfs(i, -1);
+            vector<int> cycle;
+            int start = path.top();
+            path.pop();
+            cycle.push_back(start);
+            while (!path.empty() && path.top() != start)
+            {
+                cycle.push_back(path.top());
+                path.pop();
+            }
+            cycle.push_back(start);
+
+            cout << cycle.size() << endl;
+            for (int city : cycle)
+            {
+                cout << city << " ";
+            }
+            cout << endl;
+            return 0;
         }
     }
-    if (isCycle)
-    {
-        for (auto i : ans)
-            cout << i << " ";
-        cout << endl;
-    }
-    else
-    {
-        cout << "IMPOSSIBLE" << endl;
-    }
+
+    cout << "IMPOSSIBLE" << endl;
     return 0;
 }

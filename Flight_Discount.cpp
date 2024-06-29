@@ -6,45 +6,58 @@ using namespace std;
 #define F first
 #define S second
 #define MP make_pair
+const int INF = 1e18;
+
 signed main()
 {
     IOS;
     cin.tie(0);
     cout.tie(0);
+
     int n, m;
     cin >> n >> m;
-    vector<vector<pair<int, int>>> g;
-    g.resize(n + 1);
+
+    vector<vector<pair<int, int>>> g(n + 1);
     for (int i = 0; i < m; i++)
     {
         int a, b, c;
         cin >> a >> b >> c;
         g[a].push_back({b, c});
     }
-    vector<int> par;
-    vector<int> dis(n + 1, 1e18);
-    vector<int> vis(n + 1, 0);
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    pq.push({0, 1});
-    dis[1] = 0;
+
+    vector<vector<int>> dis(n + 1, vector<int>(2, INF));
+    priority_queue<tuple<int, int, bool>, vector<tuple<int, int, bool>>, greater<tuple<int, int, bool>>> pq;
+
+    dis[1][0] = 0;
+    pq.push({0, 1, false}); // {cost, node, usedCoupon}
+
     while (!pq.empty())
     {
-        pair<int, int> node = pq.top();
+        auto [current_cost, u, used_coupon] = pq.top();
         pq.pop();
-        if (vis[node.S])
+
+        if (current_cost > dis[u][used_coupon])
             continue;
-        vis[node.S] = 1;
-        for(auto &v:g[node.S])
+
+        for (auto &[v, c] : g[u])
         {
-            if(dis[v.F]>dis[node.S] + v.S)
+            // Case 1: Not using coupon
+            if (current_cost + c < dis[v][used_coupon])
             {
-                dis[v.F] = dis[node.S] + v.S;
-                par.push_back(node.S);
-                pq.push({dis[v.F],v.F});
+                dis[v][used_coupon] = current_cost + c;
+                pq.push({dis[v][used_coupon], v, used_coupon});
+            }
+            
+            // Case 2: Using coupon
+            if (!used_coupon && current_cost + c / 2 < dis[v][1])
+            {
+                dis[v][1] = current_cost + c / 2;
+                pq.push({dis[v][1], v, true});
             }
         }
     }
-    for(auto i:dis)cout<<i<<" ";cout<<endl;
-    for(auto i:par)cout<<i<<" ";cout<<endl;
+
+    cout << min(dis[n][0], dis[n][1]) << endl;
+
     return 0;
 }
