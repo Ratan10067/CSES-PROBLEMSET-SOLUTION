@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define int long long
-#define mod 1000000007
 #define IOS ios_base::sync_with_stdio(false)
 #define F first
 #define S second
 #define MP make_pair
+const int mod = 1e9 + 7;
 signed main()
 {
     IOS;
@@ -22,15 +22,15 @@ signed main()
         g[a].push_back({b, c});
     }
     vector<int> dis(n + 1, 1e18);
-    int minimum_number_of_flights = INT_MAX;
+    vector<int> minimum_number_of_flights(n + 1, 1e18); // Initialize with large value
+    vector<int> maximum_number_of_flights(n + 1, 0);
     vector<int> num_path(n + 1, 0);
-    int maximum_number_of_flights = INT_MIN;
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     pq.push({0, 1});
     num_path[1] = 1;
     dis[1] = 0;
+    minimum_number_of_flights[1] = 0; // Starting point has 0 flights
     vector<int> vis(n + 1, 0);
-    int cnt = 1;
     while (!pq.empty())
     {
         pair<int, int> node = pq.top();
@@ -42,31 +42,21 @@ signed main()
         {
             if (dis[v.F] > dis[node.S] + v.S)
             {
-                if (v.F == n)
-                {
-                    cout<<"hello"<<endl;
-                    minimum_number_of_flights = min(minimum_number_of_flights, cnt);
-                    maximum_number_of_flights = max(maximum_number_of_flights, cnt);
-                }
-                cnt++;
                 dis[v.F] = dis[node.S] + v.S;
+                num_path[v.F] = num_path[node.S] % mod;
+                minimum_number_of_flights[v.F] = minimum_number_of_flights[node.S] + 1;
+                maximum_number_of_flights[v.F] = maximum_number_of_flights[node.S] + 1;
                 pq.push({dis[v.F], v.F});
-                num_path[v.F] = num_path[node.S];
             }
             else if (dis[v.F] == dis[node.S] + v.S)
             {
-                num_path[v.F] = (num_path[v.F] + num_path[node.S]) % mod;
-                cnt++;
-                if (v.F == n)
-                {
-                    minimum_number_of_flights = min(minimum_number_of_flights, cnt);
-                    maximum_number_of_flights = max(maximum_number_of_flights, cnt);
-                }
+                num_path[v.F] = (num_path[v.F] % mod + num_path[node.S] % mod) % mod;
+                minimum_number_of_flights[v.F] = min(minimum_number_of_flights[v.F], minimum_number_of_flights[node.S] + 1);
+                maximum_number_of_flights[v.F] = max(maximum_number_of_flights[v.F], maximum_number_of_flights[node.S] + 1);
             }
         }
     }
-    for(auto i:dis)cout<<i<<" ";cout<<endl;
-    for(auto i:num_path)cout<<i<<" ";cout<<endl;
-    cout<<minimum_number_of_flights<<" "<<maximum_number_of_flights<<endl;
+    cout << dis[n] << " " << num_path[n] << " ";
+    cout << minimum_number_of_flights[n] << " " << maximum_number_of_flights[n] << endl;
     return 0;
 }
