@@ -12,38 +12,51 @@ signed main()
     cout.tie(0);
     int n, m;
     cin >> n >> m;
-    vector<vector<pair<int, int>>> g;
-    g.resize(n + 1);
+    vector<vector<int>> g;
     for (int i = 0; i < m; i++)
     {
         int a, b, c;
         cin >> a >> b >> c;
-        g[a].push_back({b, c});
+        g.push_back({a, b, -c});
     }
-    priority_queue<pair<int, int>> pq;
-    pq.push({0, 1});
-    vector<int> dis(n + 1, -1e18);
+    vector<int> dis(n + 1, 1e18);
     dis[1] = 0;
-    // vector<int> vis(n + 1, 0);
-    while (!pq.empty())
+    for (int i = 1; i < n; i++)
     {
-        pair<int, int> node = pq.top();
-        pq.pop();
-        // if (vis[node.S])
-        //     continue;
-        // vis[node.S] = 1;
-        for (auto &v : g[node.S])
+        for (auto &it : g)
         {
-            if (dis[v.F] < dis[node.S] + v.S)
+            auto u = it[0];
+            auto v = it[1];
+            auto w = it[2];
+            if (dis[u] != 1e18 and (dis[u] + w < dis[v]))
             {
-                dis[v.F] = dis[node.S] + v.S;
-                pq.push({dis[v.F], v.F});
+                dis[v] = dis[u] + w;
             }
         }
     }
-    if (dis[n] >= 1e9)
+    bool found = 0;
+    for (auto &it : g)
+    {
+        auto u = it[0];
+        auto v = it[1];
+        auto w = it[2];
+        if (dis[u] != 1e18 and (dis[u] + w < dis[v]))
+        {
+            found = 1;
+            break;
+        }
+    }
+    if (found)
+    {
         cout << -1 << endl;
+    }
+    else if (dis[n] == 1e18)
+    {
+        cout << -1 << endl;
+    }
     else
-        cout << dis[n] << endl;
+    {
+        cout << dis[n] * -1 << endl;
+    }
     return 0;
 }

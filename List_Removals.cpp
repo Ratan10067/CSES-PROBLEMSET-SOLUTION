@@ -14,23 +14,32 @@ signed main()
     cin.tie(0);
     cout.tie(0);
     list<int> l;
-    unordered_map<int, list<int>::iterator> mp;
+    unordered_map<int, pair<int, list<int>::iterator>> mp;
     int n;
     cin >> n;
     int temp;
-    for (int i = 0; i < n; i++)
+    for (int i = 1; i <= n; i++)
     {
         cin >> temp;
         l.push_back(temp);
-        mp.insert({i, l.begin()});
+        mp.insert({i, {temp, l.begin()}});
     }
-    for (int i = 0; i < n; i++)
+    vector<int> ans;
+    for (int i = 1; i <= n; i++)
     {
         int position;
         cin >> position;
         auto it = mp.find(position);
-        // cout <<
+        if (it != mp.end())
+        {
+            list<int>::iterator t = it->second.second;
+            ans.push_back(*t);
+            l.erase(t);
+            mp.erase(mp.find(i));
+        }
     }
-
+    for (auto &i : ans)
+        cout << i << " ";
+    cout << endl;
     return 0;
 }

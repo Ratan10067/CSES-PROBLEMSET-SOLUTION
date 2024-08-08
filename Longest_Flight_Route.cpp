@@ -1,64 +1,99 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-using lli = long long int;
-#define mod 1000000007
-#define IOS ios_base::sync_with_stdio(false)
-#define pi 3.14
-#define F first
-#define S second
-#define MP make_pair
+#define int long long
+#define IOS                           \
+    ios_base::sync_with_stdio(false); \
+    cin.tie(0);                       \
+    cout.tie(0)
+
+vector<vector<int>> g;
+vector<int> depth;
+vector<int> parent;
+vector<int> indegree;
+int n, m;
+void topological_sort(int n, vector<int> &order)
+{
+    queue<int> q;
+    for (int i = 1; i <= n; i++)
+    {
+        if (indegree[i] == 0)
+        {
+            q.push(i);
+        }
+    }
+
+    while (!q.empty())
+    {
+        int node = q.front();
+        q.pop();
+        order.push_back(node);
+        for (auto v : g[node])
+        {
+            indegree[v]--;
+            if (indegree[v] == 0)
+            {
+                q.push(v);
+            }
+        }
+    }
+}
+
 signed main()
 {
-    int n, m;
+    IOS;
     cin >> n >> m;
-    vector<vector<pair<int, int>>> g;
     g.resize(n + 1);
+    depth.assign(n + 1, LLONG_MIN);
+    parent.assign(n + 1, -1);
+    indegree.assign(n + 1, 0);
+
     for (int i = 0; i < m; i++)
     {
         int a, b;
         cin >> a >> b;
-        g[a].push_back({b, 1});
+        g[a].push_back(b);
+        indegree[b]++;
     }
-    vector<int> path;
-    vector<vector<int>> ans;
-    vector<int> num_path(n + 1);
-    queue<pair<int, int>> q;
-    vector<int> dis(n + 1, 1e9);
-    q.push({0, 1});
-    num_path[1] = 1;
-    dis[1] = 0;
-    while (!q.empty())
+
+    vector<int> order;
+    topological_sort(n, order);
+    
+    depth[1] = 0; // Start from node 1
+
+    for (auto node : order)
     {
-        pair<int, int> node = q.front();
-        q.pop();
-        path.push_back(node.S);
-        for (auto &v : g[node.S])
+        if (depth[node] != LLONG_MIN)
         {
-            cout<<"hello "<<v.F<<" "<<v.S<<endl;
-            if (dis[v.F] > dis[node.S] + v.S)
+            for (auto v : g[node])
             {
-                dis[v.F] = dis[node.S] + v.S;
-                num_path[v.F] = num_path[node.S];
-                path.push_back(v.F);
-                if (v.F == n)
-                    ans.push_back(path);
-                q.push({dis[v.F], v.F});
-            }
-            else if(dis[v.F]==dis[node.S] + v.S)
-            {
-                num_path[v.F] += num_path[node.S];
+                if (depth[v] < depth[node] + 1)
+                {
+                    depth[v] = depth[node] + 1;
+                    parent[v] = node;
+                }
             }
         }
     }
-    for (auto i : dis)
-        cout << i << " ";
-    cout << endl;
-    for (auto i : ans)
+
+    if (depth[n] == LLONG_MIN)
     {
-        for (auto j : i)
-            cout << j << " ";
-        cout << endl;
+        cout << "IMPOSSIBLE" << endl;
+        return 0;
     }
+
+    cout << depth[n] + 1 << endl;
+    vector<int> ans;
+    for (int temp = n; temp != -1; temp = parent[temp])
+    {
+        ans.push_back(temp);
+    }
+    reverse(ans.begin(), ans.end());
+    for (int node : ans)
+    {
+        cout << node << " ";
+    }
+    cout << endl;
+
     return 0;
 }
