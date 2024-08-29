@@ -80,6 +80,5 @@ signed main()
         cout << ds.num_comp << " " << maxSize << endl;
         temp = maxSize;
     }
-
     return 0;
 }
