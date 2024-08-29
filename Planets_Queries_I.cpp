@@ -6,29 +6,27 @@ using namespace std;
     ios_base::sync_with_stdio(false); \
     cin.tie(nullptr);                 \
     cout.tie(nullptr)
-#define F first
-#define S second
-#define MP make_pair
-
-const int MAXN = 100000;
-const int LOG = 32;
 
 int n, q;
-vector<int> teleport;    // Stores the destination for each planet
-vector<vector<int>> par; // Binary lifting table
+vector<int> teleport;
+vector<vector<int>> par;
+
+int computeLog(int x)
+{
+    return 64 - __builtin_clzll(x) - 1;
+}
 
 void preprocess()
 {
-    par.assign(n + 1, vector<int>(LOG, -1)); // Initialize binary lifting table
+    int maxLog = computeLog(n) + 1; // Adjust LOG dynamically based on n
+    par.assign(n + 1, vector<int>(maxLog, -1));
 
-    // Initialize the 0-th ancestor (direct teleportation)
     for (int i = 1; i <= n; i++)
     {
         par[i][0] = teleport[i];
     }
 
-    // Fill the table
-    for (int j = 1; j < LOG; j++)
+    for (int j = 1; j < maxLog; j++)
     {
         for (int i = 1; i <= n; i++)
         {
@@ -42,29 +40,26 @@ void preprocess()
 
 signed main()
 {
-    IOS; // Optimize I/O
+    IOS;
 
     cin >> n >> q;
     teleport.resize(n + 1);
 
-    // Read the teleport destinations
     for (int i = 1; i <= n; i++)
     {
         cin >> teleport[i];
     }
 
-    // Preprocess to build the binary lifting table
     preprocess();
 
-    // Process each query
     while (q--)
     {
         int x, k;
         cin >> x >> k;
+        int maxLog = computeLog(k) + 1;
 
-        // Answer the query using binary lifting
-        for (int i = 0; i < LOG; i++)
-        { // Iterate from lowest bit to highest
+        for (int i = 0; i < maxLog; i++)
+        {
             if (k & (1LL << i))
             {
                 x = par[x][i];
