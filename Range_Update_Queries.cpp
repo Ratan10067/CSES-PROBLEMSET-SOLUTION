@@ -1,71 +1,129 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <iostream>
+#include <vector>
 #define int long long
-vector<int> tree;
-vector<int> v;
-void build(int node, int start, int end)
+using namespace std;
+
+class SegmentTree
 {
-    if (start == end)
+private:
+    vector<int> tree, lazy;
+    int n;
+
+    void build(const vector<int> &arr, int v, int tl, int tr)
     {
-        tree[node] = v[start];
-        return;
-    }
-    int mid = start + (end - start) / 2;
-    build(2 * node, start, mid);
-    build(2 * node + 1, mid + 1, end);
-    tree[node] = tree[2 * node] + tree[2 * node + 1];
-}
-void update(int node, int start, int end, int i, int x, int u)
-{
-    if (start == end)
-    {
-        v[i] = +x;
-        tree[node] = v[i];
-        return;
-    }
-    int mid = start + (end - start) / 2;
-    if (i <= mid)
-    {
-        update(2 * node, start, mid, i, x,u);
-    }
-    else
-    {
-        update(2 * node + 1, mid + 1, end, i, x,u);
-    }
-    tree[node] = tree[2 * node] + tree[2 * node + 1];
-}
-signed main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-    int n, q;
-    cin >> n >> q;
-    tree.resize(4 * n);
-    v.resize(n);
-    for (int i = 0; i < n; i++)
-    {
-        cin >> v[i];
-    }
-    build(1, 0, n - 1);
-    while (q--)
-    {
-        int t;
-        cin >> t;
-        if (t == 1)
+        if (tl == tr)
         {
-            int i, x, u;
-            cin >> i >> x >> u;
-            i--;
-            update(1, 0, n - 1, i, x,u);
+            tree[v] = arr[tl];
         }
         else
         {
-            int k;
-            cin >> k;
-            k--;
-            cout << v[k] << endl;
+            int tm = (tl + tr) / 2;
+            build(arr, v * 2, tl, tm);
+            build(arr, v * 2 + 1, tm + 1, tr);
+            tree[v] = tree[v * 2] + tree[v * 2 + 1];
         }
     }
+
+    void push(int v, int tl, int tr)
+    {
+        if (lazy[v] != 0)
+        {
+            tree[v] += lazy[v] * (tr - tl + 1);
+            if (tl != tr)
+            {
+                lazy[v * 2] += lazy[v];
+                lazy[v * 2 + 1] += lazy[v];
+            }
+            lazy[v] = 0;
+        }
+    }
+
+    void updateRange(int v, int tl, int tr, int l, int r, int addend)
+    {
+        push(v, tl, tr);
+        if (l > r)
+            return;
+        if (l == tl && r == tr)
+        {
+            lazy[v] += addend;
+            push(v, tl, tr);
+        }
+        else
+        {
+            int tm = (tl + tr) / 2;
+            updateRange(v * 2, tl, tm, l, min(r, tm), addend);
+            updateRange(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r, addend);
+            tree[v] = tree[v * 2] + tree[v * 2 + 1];
+        }
+    }
+
+    int getPoint(int v, int tl, int tr, int pos)
+    {
+        push(v, tl, tr);
+        if (tl == tr)
+        {
+            return tree[v];
+        }
+        int tm = (tl + tr) / 2;
+        if (pos <= tm)
+        {
+            return getPoint(v * 2, tl, tm, pos);
+        }
+        else
+        {
+            return getPoint(v * 2 + 1, tm + 1, tr, pos);
+        }
+    }
+
+public:
+    SegmentTree(const vector<int> &arr)
+    {
+        n = arr.size();
+        tree.resize(n * 4);
+        lazy.resize(n * 4, 0);
+        build(arr, 1, 0, n - 1);
+    }
+
+    void updateRange(int l, int r, int addend)
+    {
+        updateRange(1, 0, n - 1, l, r, addend);
+    }
+
+    int getPoint(int pos)
+    {
+        return getPoint(1, 0, n - 1, pos);
+    }
+};
+
+signed main()
+{
+    int n, q;
+    cin >> n >> q;
+    vector<int> arr(n);
+    for (int i = 0; i < n; i++)
+    {
+        cin >> arr[i];
+    }
+
+    SegmentTree st(arr);
+
+    for (int i = 0; i < q; i++)
+    {
+        int type;
+        cin >> type;
+        if (type == 1)
+        {
+            int a, b, u;
+            cin >> a >> b >> u;
+            st.updateRange(a - 1, b - 1, u); // Converting 1-based index to 0-based
+        }
+        else if (type == 2)
+        {
+            int k;
+            cin >> k;
+            cout << st.getPoint(k - 1) << endl; // Converting 1-based index to 0-based
+        }
+    }
+
     return 0;
 }
